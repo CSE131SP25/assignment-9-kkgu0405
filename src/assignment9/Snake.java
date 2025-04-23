@@ -12,6 +12,8 @@ public class Snake {
 	
 	public Snake() {
 		//FIXME - set up the segments instance variable
+		segments = new LinkedList<>();
+		segments.add(new BodySegment(0.5, 0.5, SEGMENT_SIZE));
 		deltaX = 0;
 		deltaY = 0;
 	}
@@ -38,13 +40,28 @@ public class Snake {
 	 */
 	public void move() {
 		//FIXME
+		double prevX = segments.getFirst().getX();
+		double prevY = segments.getFirst().getY();
+		segments.getFirst().setX(prevX + deltaX);
+		segments.getFirst().setY(prevY + deltaY);
+
+		for (int i = 1; i < segments.size(); i++) {
+			double tempX = segments.get(i).getX();
+			double tempY = segments.get(i).getY();
+			segments.get(i).setX(prevX);
+			segments.get(i).setY(prevY);
+			prevX = tempX;
+			prevY = tempY;
+		}
 	}
-	
 	/**
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
 		//FIXME
+		for (BodySegment s : segments) {
+			s.draw();
+	}
 	}
 	
 	/**
@@ -54,6 +71,15 @@ public class Snake {
 	 */
 	public boolean eatFood(Food f) {
 		//FIXME
+		BodySegment head = segments.getFirst();
+		double dx = head.getX() - f.getX();
+		double dy = head.getY() - f.getY();
+		double distance = Math.sqrt(dx * dx + dy * dy);
+		if (distance < SEGMENT_SIZE + Food.FOOD_SIZE) {
+			BodySegment last = segments.getLast();
+			segments.add(new BodySegment(last.getX(), last.getY(), SEGMENT_SIZE));
+			return true;
+		}
 		return false;
 	}
 	
@@ -63,6 +89,8 @@ public class Snake {
 	 */
 	public boolean isInbounds() {
 		//FIXME
-		return true;
+		double x = segments.getFirst().getX();
+		double y = segments.getFirst().getY();
+		return x >= 0 && x <= 1 && y >= 0 && y <= 1;
 	}
 }
